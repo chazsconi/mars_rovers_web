@@ -1,8 +1,9 @@
 defmodule MarsRoversWeb.UserSocket do
   use Phoenix.Socket
+  require Logger
 
   ## Channels
-  # channel "room:*", MarsRoversWeb.RoomChannel
+  channel "plateau:*", MarsRoversWeb.PlateauChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
@@ -20,6 +21,7 @@ defmodule MarsRoversWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(_params, socket) do
+    Logger.info "UserSocket.connect #{inspect _params}"
     {:ok, socket}
   end
 

@@ -8,7 +8,7 @@ import Html.Events exposing (..)
 view : Model -> Html Msg
 view model =
   div []
-    [ button [ onClick Decrement ] [ text "-" ]
-    , div [] [ text (toString model.counter) ]
-    , button [ onClick Increment ] [ text "+" ]
+    [ div [] [ text (toString model.counter) ]
+    , div [] [ text (toString model.rover) ]
+    , button [ onClick JoinChannel ] [ text "Join" ]
     ]
