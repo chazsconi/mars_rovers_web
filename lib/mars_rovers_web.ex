@@ -10,6 +10,7 @@ defmodule MarsRoversWeb do
     children = [
       # Start the endpoint when the application starts
       supervisor(MarsRoversWeb.Endpoint, []),
+      worker(MarsRovers.Runner, [[delay: 50]])
       # Start your own worker by calling: MarsRoversWeb.Worker.start_link(arg1, arg2, arg3)
       # worker(MarsRoversWeb.Worker, [arg1, arg2, arg3]),
     ]
@@ -17,7 +18,10 @@ defmodule MarsRoversWeb do
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: MarsRoversWeb.Supervisor]
-    Supervisor.start_link(children, opts)
+    {:ok, supervisor_pid} = Supervisor.start_link(children, opts)
+
+    :ok = GenEvent.add_handler(MarsRovers.EventManager, MarsRoversWeb.PlateauVisualiserWeb, [])
+    {:ok, supervisor_pid}
   end
 
   # Tell Phoenix to update the endpoint configuration

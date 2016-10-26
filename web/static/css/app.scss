@@ -1,3 +1,14 @@
 /* This file is for your main application css. */
 @import "bootstrap"; /* imports node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss */
 @import "font-awesome";
+
+.plateau {
+  width: 415px;
+  height: 415px;
+  border: 1px solid black;
+  position: relative;
+}
+
+.rover {
+  position: absolute;
+}
