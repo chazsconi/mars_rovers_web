@@ -16,6 +16,7 @@ type Msg
       = NoOp
       | PhoenixMsg (Socket.Msg Msg)
       | JoinChannel
+      | LeaveChannel
       | ReceiveRoverUpdate JE.Value
 
 type alias Rover =

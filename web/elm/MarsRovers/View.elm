@@ -6,19 +6,20 @@ import Html exposing (..)
 import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import Dict
-
+import Html.Lazy exposing (lazy)
 
 view : Model -> Html Msg
 view model =
   div []
     [ div [ class "plateau" ] (roversView model.rovers)
-    , button [ onClick JoinChannel ] [ text "Join" ]
+    , button [ onClick JoinChannel ]  [ text "Join" ]
+    , button [ onClick LeaveChannel ] [ text "Leave" ]
     ]
 
 roversView : Rovers -> List (Html Msg)
 roversView rovers =
   Dict.values rovers
-  |> (List.map roverView)
+  |> (List.map (lazy roverView))
 
 roverView : Rover -> Html Msg
 roverView rover =

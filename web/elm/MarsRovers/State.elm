@@ -24,17 +24,17 @@ model =
 initPhxSocket : Socket.Socket Msg
 initPhxSocket =
   Socket.init "ws://localhost:4000/socket/websocket"
-  |> Socket.withDebug
+  -- |> Socket.withDebug
   |> Socket.on "rover:update" "plateau:public" ReceiveRoverUpdate
 
 -- UPDATE
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  let
-    msg = Debug.log "msg=" msg
-    model = Debug.log "model=" model
-  in
+  -- let
+  --   msg = Debug.log "msg=" msg
+  --   model = Debug.log "model=" model
+  -- in
     case msg of
       NoOp ->
         (model, Cmd.none)
@@ -43,6 +43,12 @@ update msg model =
         let
           channel = Channel.init "plateau:public"
           (phxSocket, phxCmd) = Socket.join channel model.phxSocket
+        in
+          ({ model | phxSocket = phxSocket} , Cmd.map PhoenixMsg phxCmd)
+
+      LeaveChannel ->
+        let
+          (phxSocket, phxCmd) = Socket.leave "plateau:public" model.phxSocket
         in
           ({ model | phxSocket = phxSocket} , Cmd.map PhoenixMsg phxCmd)
 
