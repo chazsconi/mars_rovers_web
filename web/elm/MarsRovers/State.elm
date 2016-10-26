@@ -6,6 +6,7 @@ import MarsRovers.IO exposing(..)
 import Phoenix.Socket as Socket
 import Phoenix.Channel as Channel
 import Json.Decode as JD exposing (decodeValue)
+import Dict
 
 -- MODEL
 
@@ -17,7 +18,7 @@ model : Model
 model =
   { phxSocket = initPhxSocket
   , counter = 0
-  , rover = { id = 1, x = 1, y = 1, d = "N" }
+  , rovers = Dict.empty
   }
 
 initPhxSocket : Socket.Socket Msg
@@ -56,10 +57,15 @@ update msg model =
       ReceiveRoverUpdate raw ->
         case JD.decodeValue roverUpdateDecoder raw of
             Ok rover ->
-              ({model | rover = rover}, Cmd.none)
+              ({model | rovers = updateRovers rover model.rovers}, Cmd.none)
 
             Err error ->
                 ( model, Cmd.none )
+
+updateRovers : Rover -> Rovers -> Rovers
+updateRovers rover rovers =
+  Dict.insert rover.id rover rovers
+
 
 -- SUBSCRIPTIONS
 

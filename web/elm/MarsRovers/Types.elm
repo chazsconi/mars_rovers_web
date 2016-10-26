@@ -1,13 +1,15 @@
 module MarsRovers.Types exposing (..)
 
 import Phoenix.Socket as Socket
-
 import Json.Encode as JE
+import Dict
+
+type alias Rovers = Dict.Dict Int Rover
 
 type alias Model =
-  { phxSocket : Socket.Socket Msg,
-    counter : Int,
-    rover : Rover
+  { phxSocket : Socket.Socket Msg
+  ,  counter : Int
+  ,  rovers : Rovers
   }
 
 type Msg
