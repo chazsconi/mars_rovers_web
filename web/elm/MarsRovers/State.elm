@@ -17,8 +17,7 @@ init =
 
 model : Model
 model =
-  { counter = 0
-  , state = Disconnected
+  { state = Disconnected
   , rovers = Dict.empty
   }
 

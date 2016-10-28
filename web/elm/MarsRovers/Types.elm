@@ -6,8 +6,7 @@ import Dict
 type alias Rovers = Dict.Dict Int Rover
 
 type alias Model =
-  { counter : Int
-  , state : State
+  { state : State
   , rovers : Rovers
   }
 
