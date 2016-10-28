@@ -3,6 +3,7 @@ module MarsRovers.State exposing (init, update, subscriptions)
 import MarsRovers.Types exposing(..)
 import MarsRovers.IO exposing(..)
 
+import Phoenix
 import Phoenix.Socket as Socket
 import Phoenix.Channel as Channel
 import Json.Decode as JD exposing (decodeValue)
@@ -16,16 +17,10 @@ init =
 
 model : Model
 model =
-  { phxSocket = initPhxSocket
-  , counter = 0
+  { counter = 0
+  , state = Disconnected
   , rovers = Dict.empty
   }
-
-initPhxSocket : Socket.Socket Msg
-initPhxSocket =
-  Socket.init "ws://localhost:4000/socket/websocket"
-  -- |> Socket.withDebug
-  |> Socket.on "rover:update" "plateau:public" ReceiveRoverUpdate
 
 -- UPDATE
 
@@ -39,26 +34,14 @@ update msg model =
       NoOp ->
         (model, Cmd.none)
 
+      UpdateState state ->
+        ({model | state = state}, Cmd.none)
+
       JoinChannel ->
-        let
-          channel = Channel.init "plateau:public"
-          (phxSocket, phxCmd) = Socket.join channel model.phxSocket
-        in
-          ({ model | phxSocket = phxSocket} , Cmd.map PhoenixMsg phxCmd)
+        ({model | state = Connecting}, Cmd.none)
 
       LeaveChannel ->
-        let
-          (phxSocket, phxCmd) = Socket.leave "plateau:public" model.phxSocket
-        in
-          ({ model | phxSocket = phxSocket} , Cmd.map PhoenixMsg phxCmd)
-
-      PhoenixMsg msg ->
-        let
-          ( phxSocket, phxCmd ) = Socket.update msg model.phxSocket
-        in
-          ( { model | phxSocket = phxSocket }
-          , Cmd.map PhoenixMsg phxCmd
-          )
+        ({model | state = Disconnecting}, Cmd.none)
 
       ReceiveRoverUpdate raw ->
         case JD.decodeValue roverUpdateDecoder raw of
@@ -77,4 +60,18 @@ updateRovers rover rovers =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Socket.listen model.phxSocket PhoenixMsg
+  case model.state of
+    Connecting    -> Phoenix.connect socket [channel]
+    Connected     -> Phoenix.connect socket [channel]
+    _             -> Phoenix.connect socket []
+
+channel : Channel.Channel Msg
+channel =
+  Channel.init "plateau:public"
+  |> Channel.on "rover:update" ReceiveRoverUpdate
+  |> Channel.onJoin  (\_ -> UpdateState Connected)
+  |> Channel.onLeave (\_ -> UpdateState Disconnected)
+
+socket : Socket.Socket
+socket =
+  Socket.init "ws://localhost:4000/socket/websocket"

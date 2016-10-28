@@ -12,9 +12,16 @@ view : Model -> Html Msg
 view model =
   div []
     [ div [ class "plateau" ] (roversView model.rovers)
-    , button [ onClick JoinChannel ]  [ text "Join" ]
-    , button [ onClick LeaveChannel ] [ text "Leave" ]
+    , connectButtonView model.state
     ]
+
+connectButtonView : State -> Html Msg
+connectButtonView state =
+  case state of
+    Disconnected  -> button [ onClick JoinChannel ]   [ text "Connect" ]
+    Connected     -> button [ onClick LeaveChannel ]  [ text "Disconnect" ]
+    Connecting    -> button [] [ text "Connecting.." ]
+    Disconnecting -> button [] [ text "Disonnecting.." ]
 
 roversView : Rovers -> List (Html Msg)
 roversView rovers =

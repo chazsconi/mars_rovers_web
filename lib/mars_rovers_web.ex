@@ -10,7 +10,7 @@ defmodule MarsRoversWeb do
     children = [
       # Start the endpoint when the application starts
       supervisor(MarsRoversWeb.Endpoint, []),
-      worker(MarsRovers.Runner, [[delay: 1]])
+      worker(MarsRovers.Runner, [[delay: 10]])
       # Start your own worker by calling: MarsRoversWeb.Worker.start_link(arg1, arg2, arg3)
       # worker(MarsRoversWeb.Worker, [arg1, arg2, arg3]),
     ]
